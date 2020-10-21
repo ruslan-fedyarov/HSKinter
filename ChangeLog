@@ -1,0 +1,46 @@
+2020-10-21  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.5.
+    Interface improvements. Minor bugs fixed. Minor dictionary
+    improvements.
+
+2020-08-30  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.4.
+    Word picking algorithm improvements. Bugs fixed.
+
+2020-08-22  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.3.
+    Added partial level selection (per cent). Interface and dictionary
+    improvements.
+
+2020-06-20  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.2.
+    Minor dictionary improvements.
+
+2020-06-06  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.1.
+    Added 'b4ck' keyword.
+    Minor improvements.
+
+2020-05-31  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.0.
+    Added HSK 4, flashcard mode (default) and Python 2 support.
+    Minor improvements.
+
+2020-04-09  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.3.0.
+    Added HSK 3, support for "st4ts" and autosave on closing the window.
+    Minor improvements.

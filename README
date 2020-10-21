@@ -1,0 +1,130 @@
+
+         HSKinter - Chinese Words Study (HSK 1-4) on Desktop and Phone
+
+
+INSTALLATION
+
+Unpack .tar.gz file to a folder.
+
+Make sure your system has Python 2, Python 3 or Pydroid 3 installed.
+
+On Android it makes sense to change the line 'pydroid=False' of 'hskinter.py'
+to 'pydroid=True' to hear the pronunciation.
+
+For sound you will also need gTTS installed (use Pydroid's terminal or shell):
+
+    pip install gTTS
+
+On desktop you should additionally install playsound (Android uses Kivy libs):
+
+    pip install playsound
+
+You can also use the same packages from your operating system distribution.
+
+Your system may need additional Chinese fonts installed to show the characters
+properly.
+
+
+LAUNCHING
+
+On most systems with Python and Tkinter installed, the application should run
+out of box without sound. Just launch (click) the file 'hskinter.py'.
+
+Alternatively, you can open 'hskinter.py' in IDLE (typically comes with Python)
+and press F5 to run it.
+
+Or you can open your shell, change to the unpacking directory and enter:
+
+    python hskinter.py
+
+On the phone, open 'hskinter.py' in Pydroid and press the yellow 'Run' button.
+
+
+USAGE NOTES
+
+The same user should run the program in the same writable directory with files
+'hsk.json' and 'hsk' (the latter is automatically created user's statistics).
+
+Click or tap the elements of the window to get explanation or action info.
+
+The program typically starts in flashcard mode, press 'OK' to go to the next
+word. Use this mode when you're not familiar with most of the words in an
+HSK level.
+
+In flashcard mode the program prefers words with statistically fewer correct
+answers (lower 'lvl'), and if the levels of the words are the same, it picks
+words with longer time since the last answer (older ones), using the same
+algorithm as in the answering mode. The last 10 words shown are checked to
+avoid too much repetition in a row. Typing 'b4ck' shows the previous
+flashcard (just one).
+
+To test your knowledge, click '[ ]' or type 'fl4sh' (with digit '4' instead
+of 'a') to enter the answering mode. Now you can type a translation of the
+hanzi shown. If there are multiple translations, you can enter either of them.
+The correctness is indicated immediately. Press 'OK' to save the answer to
+the internal stats and move to the next word. If there was a shorter answer
+for that hanzi, the program may hint you at that.
+
+You may sometimes prefer entering the hanzi itself, not a translation, then
+the program will simply compare it to the original. This way you can practice
+your Pinyin input skills.
+
+You can enter 'hsk1', 'hsk2' etc to turn HSK levels on or off. Any combination
+is allowed for both flashcard and answering mode. To switch several levels to
+the opposite mode, enter 'hsk1-3', 'hsk2-4' or similar.
+
+It is possible to use only the first NN% of an HSK level. To do this, type
+'hskN.N' or 'hskN.NN' and press enter. For example, to select the first 10%
+of HSK 2 (15 words, to be exact), enter 'hsk2.1' or 'hsk2.10'. If you need
+only 1% of HSK 4 (6 words), enter 'hsk4.01' etc. This is especially useful
+at higher HSK levels where the number of new words can easily become
+overwhelming. To set the percentage for several HSK levels simultaneously,
+enter 'hskN-N.N' or 'hskN-N.NN', e.g. 'hsk1-4.01' (1% of each HSK).
+
+By default, 100% of all levels are used when you turn them on or off. To get
+this 100% state of a level back, use 'hskN.0'. When you type 'hsk', the
+current percentage of active levels is shown as a reminder. The same per
+cents are applied to both flashcard and answering mode.
+
+The recommended approach is to add 15 to 25 new words at a time (2%-10%
+depending on HSK level, e.g. 'hsk1.10', 'hsk2.05', 'hsk4.02'), then to cycle
+through their flashcards for a couple of days, and finally to bring the
+levels of all these new words to 9 in the answering mode, maintaining the
+old words too. When confident enough, start again this learning cycle by
+adding another dozen or two ('hsk1.20' etc).
+
+To get the retaining statistics, you should click the word 'Lvl' or you can
+type 'st4ts' (with digit '4' instead of 'a'). The stats shows you the current
+number of words for each retaining level (0 is the worst remembered--never
+answered correctly for the last 9 questions, 9 is the best--9 correct answers
+out of recent 9). Only currently used HSK levels and their per cents are
+counted in the stats.
+
+Exit the program by clicking 'Exit', by pressing Esc key or by closing the
+window (on desktop), not by tapping 'Back' on Pydroid 3. Otherwise, it won't
+save the changes of this session to 'hsk' file.
+
+It's better to avoid rotating the phone when the program runs, or Pydroid
+may abort the session.
+
+To turn sound on, click 'X )' or type 's0und'. To use sound by default,
+change 'soundon=False' to 'soundon=True' in 'hskinter.py'. You can turn off
+flashcards similarly ('cards=True' to 'cards=False'). The font of the words
+is adjustable too ('lab.config(font=("Helvetica", 30))')
+
+You need to be online to fetch Google's pronunciation of a word shown for the
+first time with sound on. This pronunciation is immediately stored to a newly
+created 'gtts' folder as a tiny MP3 file. Next time the word is pronounced
+using the saved file (cached).
+
+If all the pronunciations of your current HSK levels have already been fetched
+(you have 150, 300, 600 or 1200 MP3 files in 'gtts' directory), you can use
+the program offline with sound on. You can also copy the whole 'gtts'
+directory to another system/device and use it with another copy of the
+program, it should work fine.
+
+The file 'hsk.json' is human readable and editable (UTF-8), its format is
+pretty intuitive. Make a backup copy before altering it.
+
+It also makes sense to regularly backup your personal stats file 'hsk'.
+
