@@ -28,7 +28,7 @@ properly.
 LAUNCHING
 
 On most systems with Python and Tkinter installed, the application should run
-out of box without sound. Just launch (click) the file 'hskinter.py'.
+out of the box in mute mode. Just launch (click) the file 'hskinter.py'.
 
 Alternatively, you can open 'hskinter.py' in IDLE (typically comes with Python)
 and press F5 to run it.
@@ -126,5 +126,8 @@ program, it should work fine.
 The file 'hsk.json' is human readable and editable (UTF-8), its format is
 pretty intuitive. Make a backup copy before altering it.
 
-It also makes sense to regularly backup your personal stats file 'hsk'.
+It also makes sense to regularly backup your personal stats file 'hsk'. Newer
+versions of the program are backward compatible with the format of the file,
+so you can just copy your stats to a newer version's directory, or overwrite
+'hsk.json' and 'hskinter.py' of your older version with newer ones.
 

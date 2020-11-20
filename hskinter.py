@@ -18,13 +18,13 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 __author__ = "Ruslan Fedyarov"
 __contact__ = "fedyarov@ukr.net"
 __copyright__ = "Copyright 2020"
-__date__ = "2020/10/21"
+__date__ = "2020/11/20"
 __deprecated__ = False
 __email__ =  "fedyarov@ukr.net"
 __license__ = "GPLv3"
 __maintainer__ = "Ruslan Fedyarov"
 __status__ = "Production"
-__version__ = "0.4.5"
+__version__ = "0.4.6"
 
 import sys
 if sys.version_info.major==3:
@@ -104,12 +104,28 @@ def newquestion(oldi=-1):
 
             ll=lev[hsk[i*7+6]-1]    
             if ll==1 or (ll>1 and round((i-lbase+1)/(lsiz[j]-lbase), 5)<=round(ll-int(ll), 5)):
-                srtd.append((i, bin(hsk[i*7+4]).count("1"), (int(time())-hsk[i*7+3])//60))
+                srtd.append((i, bin(hsk[i*7+4]).count("1"), (int(time())-hsk[i*7+3])//86400))
         srtd.sort(key=lambda tup:(tup[1], -tup[2]))
         ntries=0
         while True:
             i=randrange(min(ntries+1, len(srtd))**2)
-            i=srtd[int(sqrt(i))][0]
+            i=int(sqrt(i))
+            i_low=i
+            while i_low>=0:
+                if srtd[i_low][1]!=srtd[i][1] or srtd[i_low][2]!=srtd[i][2]:
+                    break
+                i_low-=1
+            i_low+=1
+
+            i_hi=i
+            while i_hi<len(srtd):
+                if srtd[i_hi][1]!=srtd[i][1] or srtd[i_hi][2]!=srtd[i][2]:
+                    break
+                i_hi+=1
+            if i_low!=i_hi:
+                i=srtd[randrange(i_low, i_hi)][0]
+            else:
+                i=i_low
 
             if hsk[i*7+1]!="" and ((not (not cards and i in lasti) and not (cards and i in flasti)) or ntries==20) and lev[hsk[i*7+6]-1]>=1: 
                 if cards:
@@ -226,7 +242,7 @@ def btnclicked():
             flasti.pop(0)
         i=newquestion()
         if len(su)>0:
-            lab2.config(text="You're in flashcard mode.\nType 'fl4sh' to turn it off.")
+            lab2.config(text="You're in flashcard mode.\nClick '[ ]' to turn it off.")
             lab2.config(fg="red")
         
     else:
