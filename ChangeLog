@@ -1,3 +1,23 @@
+2021-01-03  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.8.
+    Added 'yes/no' mode. Minor fixes and improvements.
+
+2020-12-17  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.7.1.
+    Bugs fixed. Interface improvements.
+    Added support for 'sp4n'.
+
+2020-12-12  Ruslan Fedyarov  <fedyarov@ukr.net>
+
+    * NEWS:
+    Released as v0.4.7.
+    Added support for pinyin answers. Totals are saved between
+    sessions now. Minor improvements.
+
 2020-11-20  Ruslan Fedyarov  <fedyarov@ukr.net>
 
     * NEWS:

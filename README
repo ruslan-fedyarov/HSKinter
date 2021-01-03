@@ -4,7 +4,7 @@
 
 INSTALLATION
 
-Unpack .tar.gz file to a folder.
+Unpack .tar.gz file into a folder.
 
 Make sure your system has Python 2, Python 3 or Pydroid 3 installed.
 
@@ -30,47 +30,30 @@ LAUNCHING
 On most systems with Python and Tkinter installed, the application should run
 out of the box in mute mode. Just launch (click) the file 'hskinter.py'.
 
-Alternatively, you can open 'hskinter.py' in IDLE (typically comes with Python)
-and press F5 to run it.
+Alternatively, you can open 'hskinter.py' in IDLE (typically comes with
+Python) and press F5 to run it.
 
 Or you can open your shell, change to the unpacking directory and enter:
 
     python hskinter.py
 
-On the phone, open 'hskinter.py' in Pydroid and press the yellow 'Run' button.
+On the phone, open 'hskinter.py' in Pydroid and press the yellow '>' button.
 
 
 USAGE NOTES
 
 The same user should run the program in the same writable directory with files
 'hsk.json' and 'hsk' (the latter is automatically created user's statistics).
+You can use multiple independent copies of the program in several directories.
 
-Click or tap the elements of the window to get explanation or action info.
+Click or tap the elements of the window to get explanation or action tip.
 
 The program typically starts in flashcard mode, press 'OK' to go to the next
 word. Use this mode when you're not familiar with most of the words in an
 HSK level.
 
-In flashcard mode the program prefers words with statistically fewer correct
-answers (lower 'lvl'), and if the levels of the words are the same, it picks
-words with longer time since the last answer (older ones), using the same
-algorithm as in the answering mode. The last 10 words shown are checked to
-avoid too much repetition in a row. Typing 'b4ck' shows the previous
-flashcard (just one).
-
-To test your knowledge, click '[ ]' or type 'fl4sh' (with digit '4' instead
-of 'a') to enter the answering mode. Now you can type a translation of the
-hanzi shown. If there are multiple translations, you can enter either of them.
-The correctness is indicated immediately. Press 'OK' to save the answer to
-the internal stats and move to the next word. If there was a shorter answer
-for that hanzi, the program may hint you at that.
-
-You may sometimes prefer entering the hanzi itself, not a translation, then
-the program will simply compare it to the original. This way you can practice
-your Pinyin input skills.
-
 You can enter 'hsk1', 'hsk2' etc to turn HSK levels on or off. Any combination
-is allowed for both flashcard and answering mode. To switch several levels to
+is allowed for both flashcard and practice mode. To switch several levels to
 the opposite mode, enter 'hsk1-3', 'hsk2-4' or similar.
 
 It is possible to use only the first NN% of an HSK level. To do this, type
@@ -81,53 +64,98 @@ at higher HSK levels where the number of new words can easily become
 overwhelming. To set the percentage for several HSK levels simultaneously,
 enter 'hskN-N.N' or 'hskN-N.NN', e.g. 'hsk1-4.01' (1% of each HSK).
 
-By default, 100% of all levels are used when you turn them on or off. To get
-this 100% state of a level back, use 'hskN.0'. When you type 'hsk', the
-current percentage of active levels is shown as a reminder. The same per
-cents are applied to both flashcard and answering mode.
+By default, all 100% of each level are used when you turn them on or off.
+To get back this 100% state of a level, enter 'hskN.0'. When you type 'hsk',
+the current percentage of all active levels is shown as a reminder. The same
+per cents are applied to both flashcard and practice mode.
 
-The recommended approach is to add 15 to 25 new words at a time (2%-10%
-depending on HSK level, e.g. 'hsk1.10', 'hsk2.05', 'hsk4.02'), then to cycle
-through their flashcards for a couple of days, and finally to bring the
-levels of all these new words to 9 in the answering mode, maintaining the
-old words too. When confident enough, start again this learning cycle by
-adding another dozen or two ('hsk1.20' etc).
+In both modes, the program sorts the words by their level of correctness for
+the last 9 answers (Lvl), then by age in full days, and finally by their
+cumulative (historical) error level. Words are picked from the list
+randomly, with mild preference for the top of the list. The last 10 words
+shown/answered are checked to avoid too much repetition in a row.
 
-To get the retaining statistics, you should click the word 'Lvl' or you can
-type 'st4ts' (with digit '4' instead of 'a'). The stats shows you the current
-number of words for each retaining level (0 is the worst remembered--never
-answered correctly for the last 9 questions, 9 is the best--9 correct answers
-out of recent 9). Only currently used HSK levels and their per cents are
-counted in the stats.
+To limit the list to pick to certain number of words, enter 'sp4n' followed
+by a number. For example, to pick only among 100 weakest and oldest ones, use
+'sp4n100'. You can turn the limitation off by entering 'sp4n0', then all
+the words are used for picking. Typing 'b4ck' shows the previous flashcard
+(just one).
+
+To test your knowledge, click '?' or type 'fl4sh', and you will enter the
+practice mode. Now you can type a translation of the word shown. If there
+are multiple translations, you can enter either of them. Answer correctness
+is indicated immediately. Press 'OK' to save the answer to the internal stats
+and move on to the next word. If there was a shorter answer for that hanzi,
+the program may occasionally hint you at that.
+
+You may sometimes prefer entering the hanzi itself, instead of its meaning,
+then the program will simply compare it to the original characters. This way
+you can practise your Pinyin input skills. It makes sense to do it in another
+copy of the program, starting from scratch.
+
+Answering via pinyin with tones specified is also possible. The tones can be
+specified as numerals at the end of a syllable (1-4 and 0 or 5 for neutral),
+or one of the characters "-/_\.", e.g. 'hao3' or 'hao_' for '好'. The space
+between the syllables is optional. The neutral tone should be typed in
+explicitly.
+
+An alternative practice mode is turned on and off with 'ye5no'. It only
+accepts 'y' (yes) and 'n' (no) as answers for the meaning shown. The purpose
+of this mode is to reduce the tendency to memorise just one of possible
+meanings of a word.
+
+The recommended learning approach is to add 15 to 25 new words at a time
+(2%-10% depending on HSK level, e.g. 'hsk1.10', 'hsk3.05', 'hsk4.03'), then
+to cycle through their flashcards for a day or two, having set the 'sp4n' to
+the same or slightly bigger number (~15-25), and finally to bring the levels
+of all the new words to 9 in the practice mode. As you approach the goal, the
+old words will start to appear, allowing you to maintain them too. When
+confident enough, restart this learning cycle by adding another dozen or two
+('hsk1.20' etc).
+
+To get the retaining statistics, you should click the word 'Lvl', or you can
+type 'st4ts'. It shows you the current number of words for each retaining
+level (0 is the worst remembered--never answered correctly for the last 9
+questions, 9 is the best--9 correct answers out of recent 9). Only currently
+used HSK levels and their per cents are counted in the stats.
 
 Exit the program by clicking 'Exit', by pressing Esc key or by closing the
 window (on desktop), not by tapping 'Back' on Pydroid 3. Otherwise, it won't
 save the changes of this session to 'hsk' file.
 
+If the entry box above it is not empty, the 'Exit' button turns into 'Clear'.
+You can use it instead of double tapping a word to delete the whole phrase
+that was entered via voice recognition.
+
+The total numbers of cards shown, errors, answers given, 'sp4n' size and the
+current mode of the program are stored on exit in 'hsktot' file. Click the
+numbers on the screen to reset them to zero.
+
 It's better to avoid rotating the phone when the program runs, or Pydroid
 may abort the session.
 
-To turn sound on, click 'X )' or type 's0und'. To use sound by default,
-change 'soundon=False' to 'soundon=True' in 'hskinter.py'. You can turn off
-flashcards similarly ('cards=True' to 'cards=False'). The font of the words
-is adjustable too ('lab.config(font=("Helvetica", 30))')
+To turn the sound on, click 'X )' or type 's0und'. To use sound by default,
+change 'soundon=False' to 'soundon=True' in 'hskinter.py'. The font of the
+hanzi is adjustable too ('lab.config(font=("Helvetica", 30))')
 
 You need to be online to fetch Google's pronunciation of a word shown for the
-first time with sound on. This pronunciation is immediately stored to a newly
-created 'gtts' folder as a tiny MP3 file. Next time the word is pronounced
-using the saved file (cached).
+first time with sound turned on. This pronunciation is immediately stored
+into a newly created 'gtts' folder as a tiny MP3 file. Next time the word is
+pronounced using the saved file (cached). The words are pronounced AFTER the
+answer on purpose, to avoid memorising only the sound of a hanzi instead of
+its appearance.
 
 If all the pronunciations of your current HSK levels have already been fetched
 (you have 150, 300, 600 or 1200 MP3 files in 'gtts' directory), you can use
-the program offline with sound on. You can also copy the whole 'gtts'
-directory to another system/device and use it with another copy of the
+the program offline with sound turned on. You can also copy the whole 'gtts'
+directory to another system or device and use it with another copy of the
 program, it should work fine.
 
 The file 'hsk.json' is human readable and editable (UTF-8), its format is
-pretty intuitive. Make a backup copy before altering it.
+pretty intuitive (hanzi, answers, alternative answers, 0, 0, pinyin, HSK
+level).
 
-It also makes sense to regularly backup your personal stats file 'hsk'. Newer
+It is advisable to regularly backup your personal stats file 'hsk'. Newer
 versions of the program are backward compatible with the format of the file,
-so you can just copy your stats to a newer version's directory, or overwrite
-'hsk.json' and 'hskinter.py' of your older version with newer ones.
+so you can just copy your stats to a newer version's directory.
 

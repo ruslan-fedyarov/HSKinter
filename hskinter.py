@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """ Chinese Words Study (HSK 1-4) on Desktop and Phone
 
 A Python/Tkinter tool for learning HSK 1-4 Mandarin words with flashcards,
@@ -17,25 +18,25 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Ruslan Fedyarov"
 __contact__ = "fedyarov@ukr.net"
-__copyright__ = "Copyright 2020"
-__date__ = "2020/11/20"
+__copyright__ = "Copyright 2021"
+__date__ = "2021/01/03"
 __deprecated__ = False
 __email__ =  "fedyarov@ukr.net"
 __license__ = "GPLv3"
 __maintainer__ = "Ruslan Fedyarov"
 __status__ = "Production"
-__version__ = "0.4.6"
+__version__ = "0.4.8"
 
 import sys
 if sys.version_info.major==3:
     from tkinter import *
 else:
     from Tkinter import *
-from random import randrange
+from random import randrange, choice
 from time import time, sleep
 from os import path, mkdir
 import json
-from math import sqrt
+from math import pow
 
 pydroid=False # change to True on Android
 soundon=False # default sound status
@@ -52,9 +53,49 @@ lsiz=[0, 150, 300, 600, 1200, 2500, 5000]
 
 lasti=[]
 flasti=[]
+cumul=[]
 
 soundfailed=False
 changed=False
+changed2=False
+yn=False
+proposed=''
+
+np={'-': '1', '/': '2', '_': '3', '\\': '4', '.': '5'}
+
+mp={u'à': 'a\\', u'á': 'a/', u'è': 'e\\', u'é': 'e/', u'ì': 'i\\', u'í': 'i/', u'ò': 'o\\', u'ó': 'o/', u'ù': 'u\\',
+   u'ú': 'u/', u'ü': 'v.', u'ā': 'a-', u'ē': 'e-', u'ě': 'e_', u'ī': 'i-', u'ń': 'n/', u'ō': 'o-', u'ū': 'u-', u'ǎ': 'a_',
+   u'ǐ': 'i_', u'ǒ': 'o_', u'ǔ': 'u_', u'ǚ': 'v_', u'ǜ': 'v\\'}
+
+def pinyin_num(s):
+    ls=s.split(", ")
+    rez0=[]
+    for i in ls:
+        wrd=i.split(" ")
+        rez=[]
+        rez2=[]
+        for w in wrd:
+            w2=""
+            plus="."
+            plus2="5"
+            for c in w:
+                if c in mp.keys():
+                    w2+=mp[c][0]
+                    if len(mp[c])>1:
+                        plus=mp[c][1]
+                        plus2=np[plus]
+                else:
+                    w2+=c
+            rez.append(w2+plus)
+            rez2.append(w2+plus2)
+        rez0.append("".join(rez))
+        rez0.append("".join(rez2))
+    return rez0
+
+def get_rand(n, degr):
+    x=randrange(1000000)
+    y=int(pow(x, degr)/(pow(1000000, degr))*n)
+    return y
 
 def showst4ts():
     lev2=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -82,7 +123,7 @@ def showst4ts():
     lab2.config(fg="blue")
 
 def newquestion(oldi=-1):
-    global s, i, ni, cni, lasti, cards, nc, ntries
+    global s, i, ni, cni, lasti, cards, ntries, yn, proposed
 
     se.delete(0, END)
     iii=0
@@ -104,12 +145,11 @@ def newquestion(oldi=-1):
 
             ll=lev[hsk[i*7+6]-1]    
             if ll==1 or (ll>1 and round((i-lbase+1)/(lsiz[j]-lbase), 5)<=round(ll-int(ll), 5)):
-                srtd.append((i, bin(hsk[i*7+4]).count("1"), (int(time())-hsk[i*7+3])//86400))
-        srtd.sort(key=lambda tup:(tup[1], -tup[2]))
+                srtd.append((i, bin(hsk[i*7+4]).count("1"), (int(time())-hsk[i*7+3])//86400, cumul[i][0]/cumul[i][1] if cumul[i][1]>0 else 0))
+        srtd.sort(key=lambda tup:(tup[1], -tup[2], tup[3]))
         ntries=0
         while True:
-            i=randrange(min(ntries+1, len(srtd))**2)
-            i=int(sqrt(i))
+            i=get_rand(min(len(srtd), span if span!=0 else len(srtd)), 5)
             i_low=i
             while i_low>=0:
                 if srtd[i_low][1]!=srtd[i][1] or srtd[i_low][2]!=srtd[i][2]:
@@ -118,15 +158,14 @@ def newquestion(oldi=-1):
             i_low+=1
 
             i_hi=i
-            while i_hi<len(srtd):
+            while i_hi<min(len(srtd), span if span!=0 else len(srtd)):
                 if srtd[i_hi][1]!=srtd[i][1] or srtd[i_hi][2]!=srtd[i][2]:
                     break
                 i_hi+=1
             if i_low!=i_hi:
-                i=srtd[randrange(i_low, i_hi)][0]
+                i=srtd[i_low+get_rand(i_hi-i_low, 2)][0]
             else:
-                i=i_low
-
+                i=srtd[i][0]
             if hsk[i*7+1]!="" and ((not (not cards and i in lasti) and not (cards and i in flasti)) or ntries==20) and lev[hsk[i*7+6]-1]>=1: 
                 if cards:
                     if len(flasti)==0:
@@ -168,29 +207,49 @@ def newquestion(oldi=-1):
     
     lab6.config(text=prefix2+" "+chr(48+hsk[i*7+6]))
     if cards:
-        nc+=1
         lab2.config(text=hsk[i*7+1])
         lab2.config(fg="blue")
         lab5.config(text=hsk[i*7+5])
         lab5.config(fg="black")
-        lab8.config(text="Crd "+str(nc))
+        lab8.config(text="Card "+str(nc))
     else:
-        lab8.config(text=str(cni)+" / "+str(ni))
+        if yn:
+            proposed=choice(hsk[i*7+1].split(", "))
+            if randrange(2):
+                proposed=choice(hsk[randrange(len(hsk)//7)*7+1].split(", "))
+            lab2.config(text="Is it\n'"+proposed+"'?")
+            lab2.config(fg="black")
+        lab8.config(text=str(ni-cni)+" / "+str(ni))
     se.focus()
     return i
 
 def btnclicked():
-    global i, s, soundon, ni, cni, lasti, tm, changed, ntries
+    global i, s, soundon, ni, cni, nc, lasti, tm, changed, changed2, ntries, span, yn, proposed
     
     t=int(time())
     if t-tm<1:
-    	return
+        lab2.config(text="Too fast!")
+        lab2.config(fg="red")
+        return
     tm=t
-    su=se.get().lower()
+    su=se.get().lower().strip()
+
+    if (not cards) and su=='':
+        lab2.config(text="Take a guess!" if not yn else "Enter 'Y' or 'N'.")
+        lab2.config(fg="blue")
+        return
 
     if len(su)>0:
         if su[0]=="'" and su[-1]=="'":
             su=su[1:-1]
+
+    if su.startswith("sp4n") and len(su)>4:
+        if su[4].isdigit:
+            span=int(su[4:])
+            changed2=True
+            ntries=0
+            i=newquestion()
+            return
 
     if len(su)>=len(prefix)+1:
         if su[:len(prefix)]==prefix and su[len(prefix)] in "1234":
@@ -230,11 +289,12 @@ def btnclicked():
                 changed=True
 
             if changed:
-                i=newquestion()
                 ntries=0
+                i=newquestion()
             return
 
     if cards:
+        nc+=1
         if i in flasti:
             flasti.remove(i)
         flasti.append(i)
@@ -242,7 +302,7 @@ def btnclicked():
             flasti.pop(0)
         i=newquestion()
         if len(su)>0:
-            lab2.config(text="You're in flashcard mode.\nClick '[ ]' to turn it off.")
+            lab2.config(text="You're in flashcard mode.\nClick ' ? ' to turn it off.")
             lab2.config(fg="red")
         
     else:
@@ -251,14 +311,21 @@ def btnclicked():
         hsk[i*7+3]=int(time())
         ss1=s1.lower()
 
-        found=(ss1==su or su in ss1.split(", ") or su in s2.split(", ") or s==su) and su!=""
+        if yn:
+            found2=proposed.lower() in ss1.split(", ") or proposed.lower() in s2.split(", ")
+            found=(found2 and su=='y') or (not found2 and su=='n')
+        else:
+            found=(ss1==su or su in ss1.split(", ") or su in s2.split(", ") or s==su or su.replace(" ", "") in pinyin_num(hsk[i*7+5])) and su!=""
         hsk[i*7+4]<<=1
         hsk[i*7+4]&=0b111111111
         if found:
             hsk[i*7+4]+=1
             cni+=1
+            cumul[i][0]+=1
         ni+=1
+        cumul[i][1]+=1
         changed=True
+    changed2=True
 
     if soundon:
         if not path.exists(mp3s.rstrip("/")):
@@ -295,23 +362,33 @@ def btnclicked():
         s3="" if len(s3)>=len(su) else "\nYou could also type '"+s3+"'."
 
     i=newquestion()
-    lab2.config(text="Correct!"+(" It was\n'"+s1+"'." if ss1!=su and (s3=="" or randrange(2)>0) else s3) if found else ("Wrong! " if su!="" else "")+"It was\n'"+s1+"'.")
-    lab2.config(fg="#008000" if found else "red")
-    lab5.config(text=t)
-    lab5.config(fg="black")
+    if yn:
+        lab5.config(text="True" if found else "False")
+        lab5.config(fg="#008000" if found else "red")
+    else:
+        lab2.config(text="Correct!"+(" It was\n'"+s1+"'." if ss1!=su and (s3=="" or randrange(2)>0) else s3) if found else ("Wrong! " if su!="" else "")+"It was\n'"+s1+"'.")
+        lab2.config(fg="#008000" if found else "red")
+        lab5.config(text=t)
+        lab5.config(fg="black")
 
 def enterpressed(event):
     btnclicked()
 
+def update_exit():
+    su=se.get().lower().strip()
+    exit_text.set("Exit" if su=="" else "Clear")
+
 def anykey(*args):
-    global i, s, cards, nc, flasti
+    global i, s, cards, flasti, yn
     
     s1=hsk[i*7+1]
     s2=hsk[i*7+2]
     ss1=s1.lower()
 
-    su=se.get().lower()
-    
+    su=se.get().lower().strip()
+
+    update_exit()
+
     if len(su)>0:
         if su[0]=="'" and su[-1]=="'":
             su=su[1:-1]
@@ -319,6 +396,7 @@ def anykey(*args):
     if su=="st4ts":
         se.delete(0, END)
         showst4ts()
+        update_exit()
         return
 
     if su.startswith(prefix):
@@ -335,30 +413,38 @@ def anykey(*args):
         lab2.config(fg="blue")
         return
 
-
-    if su=="fl4sh":
-        cards=not cards
-        if cards:
-            nc=0
-            se.delete(0, END)
-            btnclicked()
-        else:
-            i=newquestion()
-            lab2.config(text="Flashcards are off.\nEnter your answer.")
-            lab2.config(fg="blue")
+    if su.startswith("sp4n"):
+        lab2.config(text=str(span if span!=0 else "All")+" words.")
+        lab2.config(fg="blue")
         return
 
-    if su=="b4ck":
+    if su=="fl4sh":
+        se.delete(0, END)
+        switchcrd(None)
+        update_exit()
+        return
+
+    if not cards and su=="ye5no":
+        se.delete(0, END)
+        yn=not yn
+        changed2=True
+        i=newquestion()
+        update_exit()
+        return
+
+    if cards and su=="b4ck":
         if len(flasti)>0:
             i=newquestion(flasti[-1])
+            update_exit()
             return
 
     if su=="s0und":
         se.delete(0, END)
         switchsnd("")
+        update_exit()
         return
     
-    found=(ss1==su or su in ss1.split(", ") or su in s2.split(", ") or s==su) and su!=""
+    found=(ss1==su or su in ss1.split(", ") or su in s2.split(", ") or s==su or su.replace(" ", "") in pinyin_num(hsk[i*7+5])) and su!=""
     if found:
         if not cards:
             lab2.config(text="Correct!\nPress 'OK' to proceed.")
@@ -370,7 +456,7 @@ def anykey(*args):
             lab2.config(fg="red")
     else:
         lab2.config(fg="red")
-        lab2.config(text="" if (su.startswith(prefix) or any(ans.startswith(su) for ans in [prefix, s, "st4ts", "fl4sh", "b4ck", "s0und"]) or su=='' or any(ans.startswith(su) for ans in ss1.split(", ")) or any(ans.startswith(su) for ans in s2.split(", "))) else "Are you sure?")
+        lab2.config(text="" if (any(ans.startswith(su) for ans in [prefix, s, "st4ts", "fl4sh", "b4ck", "s0und", "sp4n", "ye5no"]) or su=='' or any(ans.startswith(su) for ans in ss1.split(", ")) or any(ans.startswith(su) for ans in s2.split(", ")) or any(ans.startswith(su.replace(" ", "")) for ans in pinyin_num(hsk[i*7+5]))) else "Are you sure?")
         t=str(bin(hsk[i*7+4]))[2:]
         while len(t)<9:
             t="0"+t
@@ -384,14 +470,17 @@ def anykey(*args):
         else:
             lab5.config(fg="black")
 
-
-        lab5.config(text=t.replace("1", "|").replace("0", ":"))
+        lab5.config(text=str(int(cumul[i][0]/cumul[i][1]*100 if cumul[i][1]*100>0 else 0))+"%")
         
 def escpressed(event):
     finita()
 
 def finita():
-    global changed
+    global changed, changed2, yn
+
+    if se.get()!='':
+        se.delete(0, END)
+        return
 
     if changed:
         lab2.config(text="Saving...")
@@ -401,8 +490,11 @@ def finita():
             f.write(",".join(str(x) for x in lev)+"\n")
             f.write(",".join(str(x) for x in lasti)+"\n")
             for i in range(len(hsk)//7):
-                f.write(str(hsk[i*7+3]) + ","+str(hsk[i*7+4])+"\n")
+                f.write(str(hsk[i*7+3])+","+str(hsk[i*7+4])+","+str(cumul[i][0])+","+str(cumul[i][1])+"\n")
         sleep(0.5)
+    if changed2:
+        with open(prefix+"tot", 'w') as f:
+            f.write("\n".join([str(i) for i in (cni, ni, nc, span, (1 if cards else 0), (1 if yn else 0))]))
     root.destroy()
 
 if sys.version_info.major==3:
@@ -424,7 +516,28 @@ if path.isfile(prefix):
             s=line.rstrip('\n').split(",")
             hsk[i*7+3]=int(s[0])
             hsk[i*7+4]=int(s[1])
+            if len(s)==2:
+                cumul.append([0, 0])
+            else:
+                cumul.append([int(s[2]), int(s[3])])
             i+=1
+else:
+    for i in range(len(hsk)//7):
+        cumul.append([0, 0])
+
+ni=0
+cni=0
+nc=0
+span=0
+
+if path.isfile(prefix+"tot"):
+    with open(prefix+"tot", 'r') as f:
+        cni=int(f.readline().rstrip("\n"))
+        ni=int(f.readline().rstrip("\n"))
+        nc=int(f.readline().rstrip("\n"))
+        span=int(f.readline().rstrip("\n"))
+        cards=int(f.readline().rstrip("\n"))!=0
+        yn=int(f.readline().rstrip("\n"))!=0
 
 def switchsnd(event):
     global soundon, soundfailed
@@ -440,36 +553,40 @@ def switchsnd(event):
     lab7.config(text="< )" if soundon else "X )")
 
 def switchcrd(event):
-    global cards, nc
+    global i, cards, changed2, nc
     cards=not cards
-    lab9.config(text="[ ]" if cards else "?")
     if cards:
-        nc=0
+        nc-=1
+    lab9.config(text=" ? " if cards else "[ ]")
+    if cards:
         btnclicked()
     else:
         i=newquestion()
-        lab2.config(text="Flashcards are off.\nEnter your answer.")
-        lab2.config(fg="blue")
-        lab5.config(text="Type!")
+        if not yn:
+            lab2.config(text="Flashcards are off.\nEnter your answer.")
+            lab2.config(fg="blue")
+        lab5.config(text="Type!" if not yn else "Y/N")
         lab5.config(fg="black")
-
+    changed2=True
 
 def c4rdhelp(event):
-    lab2.config(text=("Pinyin or level details.\n':' is wrong answer, '|' is correct one."))
+    lab2.config(text=("Pinyin or the word's correctness ever\n("+str(cumul[i][0])+' of '+str(cumul[i][1]))+").")
     lab2.config(fg="blue")
-
         
 def herozero(event):
-    global cni, ni, cards
+    global cni, ni, nc, cards, changed2
     if cards:
-        lab2.config(text="Number of flashcards shown.")
+        nc=0
+        lab8.config(text="Card "+str(nc))
+        lab2.config(text="Number of flashcards shown.\nZeroed.")
         lab2.config(fg="blue")
     else:
         cni=0
         ni=0
-        lab8.config(text=str(cni)+" of "+str(ni))
-        lab2.config(text="Correct vs total.\nZeroed.")
+        lab8.config(text=str(ni-cni)+" / "+str(ni))
+        lab2.config(text="Wrong vs total.\nZeroed.")
         lab2.config(fg="blue")
+    changed2=True
 
 def hskhelp(event):
     lab2.config(text="'"+prefix+"N' & '"+prefix+"N-N'\nturn levels on or off.\nAdd .N or .NN to set % instead (.0 = 100%).")
@@ -483,10 +600,10 @@ def lvlclicked(event):
     showst4ts()
 
 def hanzi(event):
-    global i
+    global i, proposed, yn
 
-    lab2.config(text=hsk[i*7+1] if cards else "You can also enter\nthe word itself.")
-    lab2.config(fg="blue")
+    lab2.config(text=hsk[i*7+1] if cards else ("You can also enter\nthe word itself." if not yn else "Is it\n'"+proposed+"'?"))
+    lab2.config(fg="blue" if cards or not yn else "black")
 
 def st4ts(event):
     lab2.config(text="Click 'Lvl' or type 'st4ts' for stats.")
@@ -512,21 +629,23 @@ se.bind('<Return>', enterpressed)
 se.bind('<KP_Enter>', enterpressed)
 se.bind('<Escape>', escpressed)
 var.trace("w", anykey)
-lab5=Label(root, text="Type!", wraplength=75 if pydroid else 50)
+lab5=Label(root, text="Type!" if not yn else "Y/N", wraplength=75 if pydroid else 50)
 lab5.bind("<Button-1>", c4rdhelp)
 lab6=Label(root, text="1")
 lab6.bind("<Button-1>", hskhelp)
 fr=Frame(root)
 lab7=Label(fr, text="< )" if soundon else "X )", bd=1, relief=SUNKEN)
 lab7.bind("<Button-1>", switchsnd)
-lab9=Label(fr, text="[ ]" if cards else " ? ", bd=1, relief=SUNKEN)
+lab9=Label(fr, text=" ? " if cards else "[ ]", bd=1, relief=SUNKEN)
 lab9.bind("<Button-1>", switchcrd)
 
 lab8=Label(root, text="", bd=1, relief=SUNKEN)
 lab8.bind("<Button-1>", herozero)
 
 button = Button (root, text = "OK", command = btnclicked)
-button2 = Button (root, text = "Exit", command = finita)
+exit_text = StringVar()
+button2 = Button (root, textvariable=exit_text, command = finita)
+exit_text.set("Exit")
 
 se.grid(column=1, row=3, columnspan=3)
 button.grid(column=1, row=5, sticky="e")
@@ -548,14 +667,11 @@ fr.grid(column=4, row=5)
 lab7.pack(side="left", ipadx=2, padx=2)
 lab9.pack(side="left", ipadx=2, padx=2)
 
-ni=0
-cni=0
-nc=0
 tm=0
 ntries=0
 i=newquestion()
 
-if not cards:
+if not cards and not yn:
 	showst4ts()
 try:
     if not pydroid:
