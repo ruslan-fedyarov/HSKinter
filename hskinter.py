@@ -2,7 +2,7 @@
 """ Chinese Words Study (HSK 1-4) on Desktop and Phone
 
 A Python/Tkinter tool for learning HSK 1-4 Mandarin words with flashcards,
-Pinyin and level statistics.
+pinyin and level stats.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -19,13 +19,13 @@ this program. If not, see <http://www.gnu.org/licenses/>.
 __author__ = "Ruslan Fedyarov"
 __contact__ = "fedyarov@ukr.net"
 __copyright__ = "Copyright 2021"
-__date__ = "2021/01/03"
+__date__ = "2021/01/08"
 __deprecated__ = False
 __email__ =  "fedyarov@ukr.net"
 __license__ = "GPLv3"
 __maintainer__ = "Ruslan Fedyarov"
 __status__ = "Production"
-__version__ = "0.4.8"
+__version__ = "0.4.9"
 
 import sys
 if sys.version_info.major==3:
@@ -211,15 +211,17 @@ def newquestion(oldi=-1):
         lab2.config(fg="blue")
         lab5.config(text=hsk[i*7+5])
         lab5.config(fg="black")
-        lab8.config(text="Card "+str(nc))
+        lab8.config(text="Crd "+str(nc))
+        lab8.config(fg="black" if nc%25!=0 else "red")
     else:
         if yn:
             proposed=choice(hsk[i*7+1].split(", "))
             if randrange(2):
                 proposed=choice(hsk[randrange(len(hsk)//7)*7+1].split(", "))
             lab2.config(text="Is it\n'"+proposed+"'?")
-            lab2.config(fg="black")
+            lab2.config(fg="blue")
         lab8.config(text=str(ni-cni)+" / "+str(ni))
+        lab8.config(fg="black" if ni%25!=0 else "red")
     se.focus()
     return i
 
@@ -378,6 +380,18 @@ def update_exit():
     su=se.get().lower().strip()
     exit_text.set("Exit" if su=="" else "Clear")
 
+def switch_yn():
+    global yn, changed2, i
+    
+    se.delete(0, END)
+    yn=not yn
+    changed2=True
+    if not yn:
+        lab2.config(text="'Yes/no' mode off.\nEnter translation.")
+        lab2.config(fg="blue")
+    i=newquestion()
+    update_exit()
+
 def anykey(*args):
     global i, s, cards, flasti, yn
     
@@ -425,14 +439,10 @@ def anykey(*args):
         return
 
     if not cards and su=="ye5no":
-        se.delete(0, END)
-        yn=not yn
-        changed2=True
-        i=newquestion()
-        update_exit()
+        switch_yn()
         return
 
-    if cards and su=="b4ck":
+    if cards and su=="pr3v":
         if len(flasti)>0:
             i=newquestion(flasti[-1])
             update_exit()
@@ -456,7 +466,7 @@ def anykey(*args):
             lab2.config(fg="red")
     else:
         lab2.config(fg="red")
-        lab2.config(text="" if (any(ans.startswith(su) for ans in [prefix, s, "st4ts", "fl4sh", "b4ck", "s0und", "sp4n", "ye5no"]) or su=='' or any(ans.startswith(su) for ans in ss1.split(", ")) or any(ans.startswith(su) for ans in s2.split(", ")) or any(ans.startswith(su.replace(" ", "")) for ans in pinyin_num(hsk[i*7+5]))) else "Are you sure?")
+        lab2.config(text="" if (any(ans.startswith(su) for ans in [prefix, s, "st4ts", "fl4sh", "pr3v", "s0und", "sp4n", "ye5no", "n"]) or su=='' or any(ans.startswith(su) for ans in ss1.split(", ")) or any(ans.startswith(su) for ans in s2.split(", ")) or any(ans.startswith(su.replace(" ", "")) for ans in pinyin_num(hsk[i*7+5]))) else "Are you sure?")
         t=str(bin(hsk[i*7+4]))[2:]
         while len(t)<9:
             t="0"+t
@@ -550,7 +560,7 @@ def switchsnd(event):
         lab2.config(text="Sound is now "+("on." if soundon else "off."))
         lab2.config(fg="blue")
         
-    lab7.config(text="< )" if soundon else "X )")
+    lab7.config(text="X )" if soundon else "< )")
 
 def switchcrd(event):
     global i, cards, changed2, nc
@@ -563,14 +573,17 @@ def switchcrd(event):
     else:
         i=newquestion()
         if not yn:
-            lab2.config(text="Flashcards are off.\nEnter your answer.")
+            lab2.config(text="Flashcards are off.\nEnter translation.")
             lab2.config(fg="blue")
-        lab5.config(text="Type!" if not yn else "Y/N")
+        lab5.config(text="Y / N")
         lab5.config(fg="black")
     changed2=True
 
 def c4rdhelp(event):
-    lab2.config(text=("Pinyin or the word's correctness ever\n("+str(cumul[i][0])+' of '+str(cumul[i][1]))+").")
+    if lab5.cget("text")=="Y / N":
+        switch_yn()
+        return
+    lab2.config(text=("Pinyin or the word's accuracy ever\n("+str(cumul[i][0])+' of '+str(cumul[i][1]))+").")
     lab2.config(fg="blue")
         
 def herozero(event):
@@ -578,12 +591,14 @@ def herozero(event):
     if cards:
         nc=0
         lab8.config(text="Card "+str(nc))
+        lab8.config(fg="red")
         lab2.config(text="Number of flashcards shown.\nZeroed.")
         lab2.config(fg="blue")
     else:
         cni=0
         ni=0
-        lab8.config(text=str(ni-cni)+" / "+str(ni))
+        lab8.config(text="0 / 0")
+        lab8.config(fg="red")
         lab2.config(text="Wrong vs total.\nZeroed.")
         lab2.config(fg="blue")
     changed2=True
@@ -603,7 +618,10 @@ def hanzi(event):
     global i, proposed, yn
 
     lab2.config(text=hsk[i*7+1] if cards else ("You can also enter\nthe word itself." if not yn else "Is it\n'"+proposed+"'?"))
-    lab2.config(fg="blue" if cards or not yn else "black")
+    lab2.config(fg="blue")
+    if cards:
+        lab5.config(text=hsk[i*7+5])
+        lab5.config(fg="black")
 
 def st4ts(event):
     lab2.config(text="Click 'Lvl' or type 'st4ts' for stats.")
@@ -629,12 +647,12 @@ se.bind('<Return>', enterpressed)
 se.bind('<KP_Enter>', enterpressed)
 se.bind('<Escape>', escpressed)
 var.trace("w", anykey)
-lab5=Label(root, text="Type!" if not yn else "Y/N", wraplength=75 if pydroid else 50)
+lab5=Label(root, text="Y / N", wraplength=75 if pydroid else 50)
 lab5.bind("<Button-1>", c4rdhelp)
 lab6=Label(root, text="1")
 lab6.bind("<Button-1>", hskhelp)
 fr=Frame(root)
-lab7=Label(fr, text="< )" if soundon else "X )", bd=1, relief=SUNKEN)
+lab7=Label(fr, text="X )" if soundon else "< )", bd=1, relief=SUNKEN)
 lab7.bind("<Button-1>", switchsnd)
 lab9=Label(fr, text=" ? " if cards else "[ ]", bd=1, relief=SUNKEN)
 lab9.bind("<Button-1>", switchcrd)
@@ -683,7 +701,7 @@ except:
     soundon=False
     lab2.config(text="Can't initialize sound.\n"+("Just press 'OK'." if cards else "But that's okay."))
     lab2.config(fg="red")
-    lab7.config(text="X )")
+    lab7.config(text="< )")
     soundfailed=True
 
 root.protocol("WM_DELETE_WINDOW", finita)

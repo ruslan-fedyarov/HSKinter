@@ -69,7 +69,7 @@ To get back this 100% state of a level, enter 'hskN.0'. When you type 'hsk',
 the current percentage of all active levels is shown as a reminder. The same
 per cents are applied to both flashcard and practice mode.
 
-In both modes, the program sorts the words by their level of correctness for
+In both modes, the program sorts the words by their level of accuracy for
 the last 9 answers (Lvl), then by age in full days, and finally by their
 cumulative (historical) error level. Words are picked from the list
 randomly, with mild preference for the top of the list. The last 10 words
@@ -83,7 +83,7 @@ the words are used for picking. Typing 'b4ck' shows the previous flashcard
 
 To test your knowledge, click '?' or type 'fl4sh', and you will enter the
 practice mode. Now you can type a translation of the word shown. If there
-are multiple translations, you can enter either of them. Answer correctness
+are multiple translations, you can enter either of them. Answer accuracy
 is indicated immediately. Press 'OK' to save the answer to the internal stats
 and move on to the next word. If there was a shorter answer for that hanzi,
 the program may occasionally hint you at that.
@@ -99,10 +99,13 @@ or one of the characters "-/_\.", e.g. 'hao3' or 'hao_' for '好'. The space
 between the syllables is optional. The neutral tone should be typed in
 explicitly.
 
-An alternative practice mode is turned on and off with 'ye5no'. It only
-accepts 'y' (yes) and 'n' (no) as answers for the meaning shown. The purpose
-of this mode is to reduce the tendency to memorise just one of possible
-meanings of a word.
+An alternative practice mode is turned on and off by clicking on 'Y / N' or
+by typing in 'ye5no'. It only accepts 'y' (yes) and 'n' (no) as answers for
+the meaning shown.
+
+If the meaning/pinyin of a flashcard or the question of 'yes/no' mode get
+replaced with stats or other info, you can reshow them by clicking on the
+hanzi.
 
 The recommended learning approach is to add 15 to 25 new words at a time
 (2%-10% depending on HSK level, e.g. 'hsk1.10', 'hsk3.05', 'hsk4.03'), then
@@ -127,14 +130,15 @@ If the entry box above it is not empty, the 'Exit' button turns into 'Clear'.
 You can use it instead of double tapping a word to delete the whole phrase
 that was entered via voice recognition.
 
-The total numbers of cards shown, errors, answers given, 'sp4n' size and the
+The total numbers of cards shown, errors, answers given, 'sp4n' size and
 current mode of the program are stored on exit in 'hsktot' file. Click the
-numbers on the screen to reset them to zero.
+numbers on the screen to reset them to zero. Every 25th card or question
+is marked with red colour.
 
 It's better to avoid rotating the phone when the program runs, or Pydroid
 may abort the session.
 
-To turn the sound on, click 'X )' or type 's0und'. To use sound by default,
+To turn the sound on, click '< )' or type 's0und'. To use sound by default,
 change 'soundon=False' to 'soundon=True' in 'hskinter.py'. The font of the
 hanzi is adjustable too ('lab.config(font=("Helvetica", 30))')
 
